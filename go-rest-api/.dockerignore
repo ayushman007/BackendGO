@@ -1,0 +1,10 @@
+.git
+.gitignore
+**/*_test.go
+*.exe
+*.test
+out
+vendor
+node_modules
+*.log
+README.md
