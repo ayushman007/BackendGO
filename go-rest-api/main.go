@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"go-rest-api/handlers"
+	"github.com/ayushman007/BackendGO/go-rest-api/handlers"
 	"log"
 	"net/http"
 	"os"
