@@ -2,14 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 )
-
-
 
 type Customer struct {
 	ID        int    `json:"id"`
@@ -23,19 +22,32 @@ type Customer struct {
 // store holds items in memory
 var (
 	mu        sync.RWMutex
-	
 	customers = []Customer{
 		{ID: 1, Name: "Alice Johnson", Role: "Manager", Email: "alice@example.com", Phone: "555-0101", Contacted: true},
 		{ID: 2, Name: "Bob Smith", Role: "Engineer", Email: "bob@example.com", Phone: "555-0202", Contacted: false},
 		{ID: 3, Name: "Eve Davis", Role: "Support", Email: "eve@example.com", Phone: "555-0303", Contacted: false},
 	}
 	nextCustomer = 4
-	
 )
 
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	// ensure exact root path
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	fmt.Fprintln(w, "Welcome to the Customer API")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "Available endpoints:")
+	fmt.Fprintln(w, "  GET    /customers             - list customers")
+	fmt.Fprintln(w, "  POST   /customers             - create customer (JSON body: name, role, email, phone, contacted)")
+	fmt.Fprintln(w, "  GET    /customers/{id}        - get customer by id")
+	fmt.Fprintln(w, "  PUT    /customers/{id}        - update customer (JSON body: name, role, email, phone, contacted)")
+	fmt.Fprintln(w, "  DELETE /customers/{id}        - delete customer by id")
+}
 
-// CustomersHandler handles GET (list) and POST (create) on /customers
 func CustomersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -82,9 +94,7 @@ func CustomersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// CustomerByIDHandler handles GET, PUT, DELETE on /customers/{id}
 func CustomerByIDHandler(w http.ResponseWriter, r *http.Request) {
-	// support both mux and plain net/http style paths
 	idStr := strings.TrimPrefix(r.URL.Path, "/customers/")
 	if idStr == "" || strings.Contains(idStr, "/") {
 		w.WriteHeader(http.StatusNotFound)

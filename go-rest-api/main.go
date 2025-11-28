@@ -23,6 +23,7 @@ func main() {
 
 
 	// customer routes
+	router.HandleFunc("/", handlers.HomeHandler).Methods("GET")
 	router.HandleFunc("/customers", handlers.CustomersHandler).Methods("GET", "POST")
 	router.HandleFunc("/customers/{id}", handlers.CustomerByIDHandler).Methods("GET", "PUT", "DELETE")
 
